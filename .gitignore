@@ -25,3 +25,4 @@ replay_pid*
 .classpath
 bin/db.properties
 src/db.properties
+/bin/
