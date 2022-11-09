@@ -98,7 +98,7 @@ public class ConnectDB implements AutoCloseable {
 		}
 	}
 
-	private void getColumnTypes(ResultSet rs) {
+	private int[] getColumnTypes(ResultSet rs) {
 
 		try {
 			columnTypes = new int[getColumnCount(rs)];
@@ -110,15 +110,18 @@ public class ConnectDB implements AutoCloseable {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		return columnTypes;
 
 	}
 
-	private void getColumnNames(ResultSet rs) throws SQLException {
+	private String[] getColumnNames(ResultSet rs) throws SQLException {
 		columnNames = new String[getColumnCount(rs)];
 
 		for (int i = 0; i < columnNames.length; i++) {
 			columnNames[i] = getColumnName(rs, i);
 		}
+		
+		return columnNames;
 
 	}
 
