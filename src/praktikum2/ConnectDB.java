@@ -92,7 +92,15 @@ public class ConnectDB implements AutoCloseable {
 			case Types.VARCHAR:
 				System.out.print(rs.getString(columnNames[i]));
 				break;
+			case Types.TIMESTAMP:
+				System.out.print(rs.getDate(columnNames[i]));
+				break;
+			case Types.CHAR:
+				System.out.print(rs.getString(columnNames[i]));
+				break;
+
 			}
+
 			System.out.print("\t");
 
 		}
@@ -120,7 +128,7 @@ public class ConnectDB implements AutoCloseable {
 		for (int i = 0; i < columnNames.length; i++) {
 			columnNames[i] = getColumnName(rs, i);
 		}
-		
+
 		return columnNames;
 
 	}
@@ -152,7 +160,7 @@ public class ConnectDB implements AutoCloseable {
 		}
 	}
 
-	public void preparedExecuteInsert(String query, String[] data, boolean print) {
+	public void preparedExecuteInsertMovie(String query, String[] data) {
 
 		try (PreparedStatement pStatement = cn.prepareStatement(query)) {
 
@@ -188,6 +196,52 @@ public class ConnectDB implements AutoCloseable {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void preparedExecuteInsertPerson(String query, String[] data) {
+		try (PreparedStatement pStatement = cn.prepareStatement(query)) {
+
+			int counter = 0;
+
+			while (counter < data.length) {
+
+				pStatement.setInt(1, Integer.valueOf(data[counter]));
+				counter++;
+				pStatement.setString(2, data[counter]);
+				counter++;
+				pStatement.setDate(3, DateUtil.parse(data[counter]));
+				counter++;
+				pStatement.setString(4, data[counter]);
+				counter++;
+				pStatement.executeUpdate();
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public void preparedExecuteInsertCast(String query, String[] data) {
+		try (PreparedStatement pStatement = cn.prepareStatement(query)) {
+
+			int counter = 0;
+
+			while (counter < data.length) {
+
+				pStatement.setInt(1, Integer.valueOf(data[counter]));
+				counter++;
+				pStatement.setInt(2, Integer.valueOf(data[counter]));
+				counter++;
+				pStatement.setString(3, data[counter]);
+				counter++;
+				pStatement.executeUpdate();
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 }

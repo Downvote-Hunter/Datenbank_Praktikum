@@ -9,7 +9,7 @@ public class FileDBInput {
 
 	public static void main(String[] args) {
 
-		String[] movieList = liesMovies("src/movies.csv");
+		String[] movieList = readFileCSV("src/movies.csv");
 
 		for (int i = 0; i < movieList.length; i++) {
 			System.out.println(i + 1 + ": " + movieList[i]);
@@ -17,21 +17,21 @@ public class FileDBInput {
 
 	}
 
-	public static String[] liesMovies(String filePath) {
+	public static String[] readFileCSV(String filePath) {
 
-		ArrayList<String> lieferanten = new ArrayList<>();
+		ArrayList<String> listData = new ArrayList<>();
 
 		try (Scanner readFile = new Scanner(new File(filePath))) {
 			while (readFile.hasNext()) {
 				String[] splitted = readFile.nextLine().split(";");
 
 				for (String value : splitted) {
-					lieferanten.add(value);
+					listData.add(value);
 				}
 
 			}
 
-			return lieferanten.toArray(new String[lieferanten.size()]);
+			return listData.toArray(new String[listData.size()]);
 
 		} catch (FileNotFoundException e) {
 			System.out.println("Datei:" + filePath + " Konnte nicht gefunden werden");
