@@ -25,8 +25,6 @@ public class Main {
 			System.out.println();
 			ReadDB.printDatabase("cast", cn);
 
-			// ReadDB.printDatabase("movie", cn, 1, 2);
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

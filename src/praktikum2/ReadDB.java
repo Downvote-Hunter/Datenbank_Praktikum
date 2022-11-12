@@ -7,8 +7,11 @@ public class ReadDB {
 	}
 
 	public static void printDatabase(String database, ConnectDB cn) {
-		cn.execute("select * from " + database, true);
+		printDatabase(database, "\t", cn);
+	}
 
+	public static void printDatabase(String database, String separator, ConnectDB cn) {
+		cn.execute("select * from " + database, separator, true);
 	}
 
 	public static void printDatabase(String database, ConnectDB cn, int min, int max) {

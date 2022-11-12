@@ -34,6 +34,10 @@ public class ConnectDB implements AutoCloseable {
 		}
 
 	}
+	
+	public Connection getConnection() {
+		return ConnectDB.cn;
+	}
 
 	public static void main(String[] args) {
 		try (ConnectDB cn = new ConnectDB()) {
@@ -45,13 +49,17 @@ public class ConnectDB implements AutoCloseable {
 	}
 
 	public boolean execute(String query, boolean print) {
+		return execute(query, "\t", print);
+	}
+
+	public boolean execute(String query, String separator, boolean print) {
 
 		try (Statement stmt = cn.createStatement()) {
 
 			if (print) {
 				try (ResultSet rs = stmt.executeQuery(query)) {
 
-					printResultSet(rs);
+					printResultSet(rs, separator);
 
 				}
 
@@ -68,21 +76,37 @@ public class ConnectDB implements AutoCloseable {
 		}
 	}
 
-	private void printResultSet(ResultSet rs) throws SQLException {
+	private void printResultSet(ResultSet rs) {
+		try {
+			printResultSet(rs, "\t");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void printResultSet(ResultSet rs, String separator) throws SQLException {
 		getColumnTypes(rs);
-		printColumnNames(rs);
+		printColumnNames(rs, separator);
 		System.out.println();
 		System.out.println("----------------------------------------");
 
 		while (rs.next()) {
 
-			printColumnLine(rs);
+			printColumnLine(rs, separator);
 			System.out.println();
 
 		}
 	}
 
-	private void printColumnLine(ResultSet rs) throws SQLException {
+	private void printColumnLine(ResultSet rs) {
+		try {
+			printColumnLine(rs, "\t");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void printColumnLine(ResultSet rs, String separator) throws SQLException {
 		for (int i = 0; i < columnTypes.length; i++) {
 
 			switch (columnTypes[i]) {
@@ -101,7 +125,9 @@ public class ConnectDB implements AutoCloseable {
 
 			}
 
-			System.out.print("\t");
+			if ((i + 1) < columnTypes.length) {
+				System.out.print(separator);
+			}
 
 		}
 	}
@@ -133,10 +159,18 @@ public class ConnectDB implements AutoCloseable {
 
 	}
 
-	private void printColumnNames(ResultSet rs) throws SQLException {
+	private void printColumnNames(ResultSet rs) {
+		try {
+			printColumnNames(rs, "\t");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void printColumnNames(ResultSet rs, String separator) throws SQLException {
 		getColumnNames(rs);
 		for (int i = 0; i < columnNames.length; i++) {
-			System.out.print(columnNames[i] + "\t");
+			System.out.print(columnNames[i] + separator);
 
 		}
 	}
