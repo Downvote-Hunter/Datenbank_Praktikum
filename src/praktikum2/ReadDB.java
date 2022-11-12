@@ -2,10 +2,6 @@ package praktikum2;
 
 public class ReadDB {
 
-	public static void main(String[] args) {
-
-	}
-
 	public static void printDatabase(String database, ConnectDB cn) {
 		printDatabase(database, "\t", cn);
 	}
@@ -19,6 +15,9 @@ public class ReadDB {
 		String query = "select * from " + database + " where MID between ? and ?";
 		cn.preparedExecuteBetween(query, min, max);
 
+	}
+
+	private ReadDB() {
 	}
 
 }

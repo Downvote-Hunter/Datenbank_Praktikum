@@ -13,13 +13,14 @@ public class DateUtil {
 		int month = Integer.parseInt(splittedDate[1]);
 		int day = Integer.parseInt(splittedDate[2]);
 
-		
 		LocalDate date = LocalDate.of(year, month, day);
 		Date.valueOf(date);
 
-
 		return Date.valueOf(date);
 
+	}
+
+	private DateUtil() {
 	}
 
 }

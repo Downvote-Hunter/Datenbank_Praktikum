@@ -3,6 +3,8 @@ package praktikum2;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Scanner;
 
 public class FileDBInput {
@@ -19,15 +21,13 @@ public class FileDBInput {
 
 	public static String[] readFileCSV(String filePath) {
 
-		ArrayList<String> listData = new ArrayList<>();
+		List<String> listData = new ArrayList<>();
 
 		try (Scanner readFile = new Scanner(new File(filePath))) {
 			while (readFile.hasNext()) {
 				String[] splitted = readFile.nextLine().split(";");
 
-				for (String value : splitted) {
-					listData.add(value);
-				}
+				Collections.addAll(listData, splitted);
 
 			}
 
@@ -36,7 +36,7 @@ public class FileDBInput {
 		} catch (FileNotFoundException e) {
 			System.out.println("Datei:" + filePath + " Konnte nicht gefunden werden");
 			System.out.println(e.getMessage());
-			return null;
+			return new String[1];
 		}
 
 	}

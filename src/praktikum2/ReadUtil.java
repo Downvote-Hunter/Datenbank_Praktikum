@@ -19,4 +19,7 @@ public class ReadUtil {
 
     }
 
+    private ReadUtil() {
+    }
+
 }

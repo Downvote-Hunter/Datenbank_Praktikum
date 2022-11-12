@@ -13,4 +13,7 @@ public class StringUtil {
 		return lowerCase;
 	}
 
+	private StringUtil() {
+	}
+
 }

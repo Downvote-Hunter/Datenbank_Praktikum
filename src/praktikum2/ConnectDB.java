@@ -11,18 +11,23 @@ import java.util.Properties;
 
 public class ConnectDB implements AutoCloseable {
 
-	private static Connection cn;
+	public static void main(String[] args) {
+		try (ConnectDB cn = new ConnectDB()) {
+			cn.connect("/db.properties");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-	private static int[] columnTypes;
-	private static String[] columnNames;
-
-	public ConnectDB() {
-		cn = null;
 	}
+
+	private Connection cn;
+	private int[] columnTypes;
+
+	private String[] columnNames;
 
 	public void connect(String propfile) {
 
-		try (java.io.InputStream propFile = new ConnectDB().getClass().getResourceAsStream(propfile)) {
+		try (java.io.InputStream propFile = ConnectDB.class.getResourceAsStream(propfile)) {
 			final Properties props = new Properties(System.getProperties());
 			props.load(propFile);
 			cn = DriverManager.getConnection(props.getProperty("url"), props.getProperty("user"),
@@ -34,18 +39,9 @@ public class ConnectDB implements AutoCloseable {
 		}
 
 	}
-	
+
 	public Connection getConnection() {
-		return ConnectDB.cn;
-	}
-
-	public static void main(String[] args) {
-		try (ConnectDB cn = new ConnectDB()) {
-			cn.connect("/db.properties");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
+		return cn;
 	}
 
 	public boolean execute(String query, boolean print) {
@@ -74,114 +70,6 @@ public class ConnectDB implements AutoCloseable {
 			System.out.println(e.getMessage());
 			return false;
 		}
-	}
-
-	private void printResultSet(ResultSet rs) {
-		try {
-			printResultSet(rs, "\t");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void printResultSet(ResultSet rs, String separator) throws SQLException {
-		getColumnTypes(rs);
-		printColumnNames(rs, separator);
-		System.out.println();
-		System.out.println("----------------------------------------");
-
-		while (rs.next()) {
-
-			printColumnLine(rs, separator);
-			System.out.println();
-
-		}
-	}
-
-	private void printColumnLine(ResultSet rs) {
-		try {
-			printColumnLine(rs, "\t");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void printColumnLine(ResultSet rs, String separator) throws SQLException {
-		for (int i = 0; i < columnTypes.length; i++) {
-
-			switch (columnTypes[i]) {
-			case Types.NUMERIC:
-				System.out.print(rs.getInt(columnNames[i]));
-				break;
-			case Types.VARCHAR:
-				System.out.print(rs.getString(columnNames[i]));
-				break;
-			case Types.TIMESTAMP:
-				System.out.print(rs.getDate(columnNames[i]));
-				break;
-			case Types.CHAR:
-				System.out.print(rs.getString(columnNames[i]));
-				break;
-
-			}
-
-			if ((i + 1) < columnTypes.length) {
-				System.out.print(separator);
-			}
-
-		}
-	}
-
-	private int[] getColumnTypes(ResultSet rs) {
-
-		try {
-			columnTypes = new int[getColumnCount(rs)];
-
-			for (int i = 0; i < columnTypes.length; i++) {
-				columnTypes[i] = rs.getMetaData().getColumnType(i + 1);
-			}
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return columnTypes;
-
-	}
-
-	private String[] getColumnNames(ResultSet rs) throws SQLException {
-		columnNames = new String[getColumnCount(rs)];
-
-		for (int i = 0; i < columnNames.length; i++) {
-			columnNames[i] = getColumnName(rs, i);
-		}
-
-		return columnNames;
-
-	}
-
-	private void printColumnNames(ResultSet rs) {
-		try {
-			printColumnNames(rs, "\t");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void printColumnNames(ResultSet rs, String separator) throws SQLException {
-		getColumnNames(rs);
-		for (int i = 0; i < columnNames.length; i++) {
-			System.out.print(columnNames[i] + separator);
-
-		}
-	}
-
-	private String getColumnName(ResultSet rs, int i) throws SQLException {
-		return rs.getMetaData().getColumnName(i + 1);
-	}
-
-	private int getColumnCount(ResultSet rs) throws SQLException {
-		return rs.getMetaData().getColumnCount();
-
 	}
 
 	@Override
@@ -275,6 +163,104 @@ public class ConnectDB implements AutoCloseable {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+
+	}
+
+	private void printResultSet(ResultSet rs) {
+		try {
+			printResultSet(rs, "\t");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void printResultSet(ResultSet rs, String separator) throws SQLException {
+		getColumnTypes(rs);
+		printColumnNames(rs, separator);
+		System.out.println();
+		System.out.println("----------------------------------------");
+
+		while (rs.next()) {
+
+			try {
+				printColumnLine(rs, separator);
+			} catch (ColumnTypeNotFoundException e) {
+				e.printStackTrace();
+			}
+			System.out.println();
+
+		}
+	}
+
+	private void printColumnLine(ResultSet rs, String separator) throws SQLException, ColumnTypeNotFoundException {
+		for (int i = 0; i < columnTypes.length; i++) {
+
+			switch (columnTypes[i]) {
+				case Types.NUMERIC:
+					System.out.print(rs.getInt(columnNames[i]));
+					break;
+				case Types.VARCHAR:
+					System.out.print(rs.getString(columnNames[i]));
+					break;
+				case Types.TIMESTAMP:
+					System.out.print(rs.getDate(columnNames[i]));
+					break;
+				case Types.CHAR:
+					System.out.print(rs.getString(columnNames[i]));
+					break;
+				default:
+					throw new ColumnTypeNotFoundException("Column type couldn't be found: " + columnNames[i]);
+
+			}
+
+			if ((i + 1) < columnTypes.length) {
+				System.out.print(separator);
+			}
+
+		}
+	}
+
+	private int[] getColumnTypes(ResultSet rs) {
+
+		try {
+			columnTypes = new int[getColumnCount(rs)];
+
+			for (int i = 0; i < columnTypes.length; i++) {
+				columnTypes[i] = rs.getMetaData().getColumnType(i + 1);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return columnTypes;
+
+	}
+
+	private String[] getColumnNames(ResultSet rs) throws SQLException {
+		columnNames = new String[getColumnCount(rs)];
+
+		for (int i = 0; i < columnNames.length; i++) {
+			columnNames[i] = getColumnName(rs, i);
+		}
+
+		return columnNames;
+
+	}
+
+	private void printColumnNames(ResultSet rs, String separator) throws SQLException {
+		getColumnNames(rs);
+		for (int i = 0; i < columnNames.length; i++) {
+			System.out.print(columnNames[i] + separator);
+
+		}
+	}
+
+	private String getColumnName(ResultSet rs, int i) throws SQLException {
+		return rs.getMetaData().getColumnName(i + 1);
+	}
+
+	private int getColumnCount(ResultSet rs) throws SQLException {
+		return rs.getMetaData().getColumnCount();
 
 	}
 

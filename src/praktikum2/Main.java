@@ -2,12 +2,12 @@ package praktikum2;
 
 public class Main {
 
-	final static String propfile = "/db.properties";
+	static final String PROPFILE = "/db.properties";
 
 	public static void main(String[] args) {
 
 		try (ConnectDB cn = new ConnectDB()) {
-			cn.connect(propfile);
+			cn.connect(PROPFILE);
 			initDB(cn);
 
 			String[] movieList = FileDBInput.readFileCSV("src/movies.csv");

@@ -43,7 +43,7 @@ public class DBReaderGen {
 	private static String[] getTableNames(ConnectDB cn) throws SQLException {
 		DatabaseMetaData dbMetaData = cn.getConnection().getMetaData();
 
-		ArrayList<String> tables = new ArrayList<String>();
+		ArrayList<String> tables = new ArrayList<>();
 
 		try (ResultSet rs = dbMetaData.getTables(null, "DBU_WS22_034", "%", null)) {
 			while (rs.next()) {
@@ -51,7 +51,7 @@ public class DBReaderGen {
 			}
 		}
 
-		return (String[]) tables.toArray(new String[tables.size()]);
+		return tables.toArray(new String[tables.size()]);
 	}
 
 }
