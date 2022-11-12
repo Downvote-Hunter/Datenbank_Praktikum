@@ -40,7 +40,7 @@ public class DBReaderGen {
 
 	}
 
-	private static String[] getTableNames(ConnectDB cn) throws SQLException {
+	public static String[] getTableNames(ConnectDB cn) throws SQLException {
 		DatabaseMetaData dbMetaData = cn.getConnection().getMetaData();
 
 		ArrayList<String> tables = new ArrayList<>();
