@@ -7,7 +7,6 @@ public class MetaData {
 	static final String PROPFILE = "/db.properties";
 
 	public static void main(String[] args) throws Exception {
-		// TODO Tabellen neu anlegen
 
 		try (ConnectDB cn = new ConnectDB()) {
 			cn.connect(PROPFILE);
