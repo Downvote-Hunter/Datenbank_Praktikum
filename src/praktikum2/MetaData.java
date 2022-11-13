@@ -1,7 +1,5 @@
 package praktikum2;
 
-import javax.xml.crypto.Data;
-
 public class MetaData {
 
 	static final String PROPFILE = "/db.properties";
