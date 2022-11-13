@@ -112,8 +112,9 @@ public class ConnectDB implements AutoCloseable {
 			pStatement.setInt(2, max);
 			pStatement.execute();
 
-			ResultSet rs = pStatement.getResultSet();
-			printResultSet(rs);
+			try (ResultSet rs = pStatement.getResultSet()) {
+				printResultSet(rs);
+			}
 
 		} catch (SQLException e) {
 			e.printStackTrace();
