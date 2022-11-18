@@ -44,6 +44,22 @@ public class ConnectDB implements AutoCloseable {
 		return cn;
 	}
 
+	public ResultSet executeReturn(String query) {
+
+		try (Statement stmt = cn.createStatement()) {
+
+			try (ResultSet rs = stmt.executeQuery(query)) {
+				return rs;
+			}
+
+		} catch (SQLException e) {
+			System.out.println("Konnte Befehl: " + query + " Nicht korrekt ausf�hren");
+			System.out.println(e.getMessage());
+		}
+		return null;
+
+	}
+
 	public boolean execute(String query, boolean print) {
 		return execute(query, "\t", print);
 	}
@@ -121,6 +137,20 @@ public class ConnectDB implements AutoCloseable {
 		}
 	}
 
+	public void preparedExecuteUpdatePersonName(String query, int PID, String name) {
+		try (PreparedStatement pStatement = cn.prepareStatement(query)) {
+
+			pStatement.setString(1, name);
+			pStatement.setInt(2, PID);
+			pStatement.executeUpdate();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+	}
+	
+
 	public void preparedExecuteInsertPerson(String query, String[] data) {
 		try (PreparedStatement pStatement = cn.prepareStatement(query)) {
 
@@ -197,20 +227,20 @@ public class ConnectDB implements AutoCloseable {
 		for (int i = 0; i < columnTypes.length; i++) {
 
 			switch (columnTypes[i]) {
-				case Types.NUMERIC:
-					System.out.print(rs.getInt(columnNames[i]));
-					break;
-				case Types.VARCHAR:
-					System.out.print(rs.getString(columnNames[i]));
-					break;
-				case Types.TIMESTAMP:
-					System.out.print(rs.getDate(columnNames[i]));
-					break;
-				case Types.CHAR:
-					System.out.print(rs.getString(columnNames[i]));
-					break;
-				default:
-					throw new ColumnTypeNotFoundException("Column type couldn't be found: " + columnNames[i]);
+			case Types.NUMERIC:
+				System.out.print(rs.getInt(columnNames[i]));
+				break;
+			case Types.VARCHAR:
+				System.out.print(rs.getString(columnNames[i]));
+				break;
+			case Types.TIMESTAMP:
+				System.out.print(rs.getDate(columnNames[i]));
+				break;
+			case Types.CHAR:
+				System.out.print(rs.getString(columnNames[i]));
+				break;
+			default:
+				throw new ColumnTypeNotFoundException("Column type couldn't be found: " + columnNames[i]);
 
 			}
 
