@@ -8,7 +8,7 @@ public class IsoLevel {
         try (ConnectDB cn = new ConnectDB()) {
             cn.connect("/db.properties");
 
-            DatabaseMetaData dbMetaData = cn.getConnection().getMetaData();
+			DatabaseMetaData dbMetaData = cn.getConnection().getMetaData();
             System.out.println("Database: " + dbMetaData.getDatabaseProductName());
             System.out.println("JDBC Major Version: " + dbMetaData.getJDBCMajorVersion());
             System.out.println("JDBC Minor Version: " + dbMetaData.getJDBCMinorVersion());
