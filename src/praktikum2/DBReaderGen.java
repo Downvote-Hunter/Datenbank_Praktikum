@@ -21,7 +21,7 @@ public class DBReaderGen {
 				System.out.println(name);
 			}
 
-			String eingabe = ReadUtil.readString().toLowerCase();
+			String eingabe = ReadUtil.readString("Gebe eine Tabelle ein: ").toLowerCase();
 			boolean tableFound = false;
 
 			for (String name : tableNames) {
