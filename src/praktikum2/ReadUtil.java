@@ -4,22 +4,37 @@ import java.util.Scanner;
 
 public class ReadUtil {
 
-    public static String readString() {
+	public static Scanner scanner = new Scanner(System.in);
 
-        System.out.print("Gebe eine Tabelle ein: ");
+	public static String readString(String message) {
+		System.out.print(message);
 
-        String input = null;
-        try (Scanner scanner = new Scanner(System.in)) {
+		String input = null;
 
-            input = scanner.nextLine();
+		input = scanner.nextLine();
 
-        }
+		return input;
 
-        return input;
+	}
 
-    }
+	public static int readInt(String message, int min, int max) throws InputNotInRange {
 
-    private ReadUtil() {
-    }
+		System.out.print(message);
+
+		int input = -1;
+
+		input = Integer.parseInt(scanner.nextLine());
+
+		if (input < min || input > max) {
+			throw new InputNotInRange(min, max);
+
+		}
+
+		return input;
+
+	}
+
+	private ReadUtil() {
+	}
 
 }
