@@ -1,0 +1,4 @@
+Solange ich den Commit nicht bestätige, ist dieser im SQLDeveloper nicht sichtbar.
+
+Wenn ich in Eclipse eine Änderung mache und dann im SQLDeveloper versuche eine Änderung zu machen,
+dann wartet der SQLDeveloper. Es passiert also nichts, bis ich über Eclipse den Commit mache.

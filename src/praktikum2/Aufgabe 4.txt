@@ -1,0 +1,7 @@
+Nein, die Ergebnisse stimmen nicht mehr überein.
+Im Worksheet wo ein neuer Datensatz  hinzugefügt wurde, erscheint nicht im anderen Worksheet.
+
+
+Damit die Ausgaben wieder übereinstimmen, muss noch ein commit ausgeführt werden.
+
+Ich vermute, man kann sich das ganze wie git vorstellen, dass Änderungen erst local durchgeführt werden, was einem die Möglichkeit gibt, seine Änderungen vorher nochmal zu prüfen.
