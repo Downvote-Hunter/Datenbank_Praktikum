@@ -55,15 +55,11 @@ public class DBUpdater {
 				eingabe = ReadUtil.readString("Moechten Sie einen weiteren Namen aendern?(Y/N): ").toLowerCase()
 						.charAt(0);
 
-				switch (eingabe) {
-				case 'y':
-					done = false;
-					break;
-				default:
-					done = true;
-					break;
-
-				}
+                if (eingabe == 'y') {
+                    done = false;
+                } else {
+                    done = true;
+                }
 			} while (!done);
 
 			System.out.println();
@@ -72,16 +68,13 @@ public class DBUpdater {
 
 			eingabe = ReadUtil.readString("Sind die Aenderungen in Ordnung?(Y/N): ").toLowerCase().charAt(0);
 
-			switch (eingabe) {
-			case 'y':
-				System.out.println("Commit");
-				cn.getConnection().commit();
-				break;
-			default:
-				System.out.println("Rollback");
-				cn.getConnection().rollback();
-				break;
-			}
+            if (eingabe == 'y') {
+                System.out.println("Commit");
+                cn.getConnection().commit();
+            } else {
+                System.out.println("Rollback");
+                cn.getConnection().rollback();
+            }
 
 			System.out.println();
 			cn.execute("select * from person", true);

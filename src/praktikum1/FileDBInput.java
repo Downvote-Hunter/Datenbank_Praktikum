@@ -3,6 +3,7 @@ package praktikum1;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Scanner;
 
 public class FileDBInput {
@@ -25,9 +26,7 @@ public class FileDBInput {
 			while (readFile.hasNext()) {
 				String[] splitted = readFile.nextLine().split(";");
 
-				for (String value : splitted) {
-					lieferanten.add(value);
-				}
+                Collections.addAll(lieferanten, splitted);
 
 			}
 

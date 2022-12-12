@@ -35,7 +35,7 @@ public class ConnectDB implements AutoCloseable {
 
 			System.out.println("Verbindung hergestellt");
 		} catch (Exception e) {
-			System.err.println("connect ERROR :\n" + e.toString());
+			System.err.println("connect ERROR :\n" + e);
 		}
 
 	}
