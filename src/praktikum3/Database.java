@@ -30,20 +30,15 @@ public class Database implements AutoCloseable {
         System.out.println();
     }
 
-    int[] getColumnTypes() {
+    int[] getColumnTypes() throws SQLException {
 
-        try {
-            columnTypes = new int[getColumnCount()];
+        columnTypes = new int[getColumnCount()];
 
-            for (int i = 0; i < columnTypes.length; i++) {
-                columnTypes[i] = rs.getMetaData().getColumnType(i + 1);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+        for (int i = 0; i < columnTypes.length; i++) {
+            columnTypes[i] = rs.getMetaData().getColumnType(i + 1);
         }
-        return columnTypes;
 
+        return columnTypes;
     }
 
     private String getColumnName(int i) throws SQLException {
