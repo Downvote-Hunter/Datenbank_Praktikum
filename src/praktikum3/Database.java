@@ -1,6 +1,5 @@
 package praktikum3;
 
-import javax.swing.plaf.nimbus.State;
 import java.sql.*;
 import java.util.Properties;
 
@@ -13,22 +12,19 @@ public class Database implements AutoCloseable {
     private String separator = "\t";
     private Statement stmt;
 
-    public Database() {
-    }
-
     public void createTables() throws SQLException {
 
-        String queryTableMovie = "create table Movie (\r\n" + "    MID integer primary key,\r\n" + "    Title varchar(255) not null,\r\n" + "    Year smallint not null\r\n" + ")";
+        String queryTableMovie = "create table Movie (MID integer primary key, Title varchar(255) not null, Year smallint not null)";
         execute(queryTableMovie);
         System.out.println(queryTableMovie);
         System.out.println();
 
-        String queryTablePerson = "CREATE TABLE Person ( \r\n" + "pid integer PRIMARY KEY,\r\n" + "name varchar(50) NOT NULL,\r\n" + "geb_datum DATE,\r\n" + "geschlecht char(1) NOT NULL)";
+        String queryTablePerson = "CREATE TABLE Person(pid integer PRIMARY KEY, name varchar(50) NOT NULL, geb_datum DATE, geschlecht char(1) NOT NULL)";
         execute(queryTablePerson);
         System.out.println(queryTablePerson);
         System.out.println();
 
-        String queryTableCast = "create table Cast (\r\n" + "  mid integer,\r\n" + "  pid integer,\r\n" + "  role varchar(50),\r\n" + "  primary key (mid, pid, role)\r\n" + ")";
+        String queryTableCast = "create table Cast (mid integer, pid integer, role varchar(50), primary key (mid, pid, role))";
         execute(queryTableCast);
         System.out.println(queryTableCast);
         System.out.println();
@@ -79,13 +75,11 @@ public class Database implements AutoCloseable {
             rs = pStatement.getResultSet();
             return this;
 
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
     }
-
 
     public void preparedExecuteUpdatePersonName(String query, int personID, String name) {
         try (PreparedStatement pStatement = cn.prepareStatement(query)) {
@@ -220,7 +214,6 @@ public class Database implements AutoCloseable {
         }
     }
 
-
     private void printColumnLine() throws SQLException, ColumnTypeNotFoundException {
         int[] columnTypes = getColumnTypes();
         String[] columnNames = getColumnNames();
@@ -267,7 +260,6 @@ public class Database implements AutoCloseable {
         stmt = cn.createStatement();
         rs = stmt.executeQuery(query);
         return this;
-
 
     }
 }
