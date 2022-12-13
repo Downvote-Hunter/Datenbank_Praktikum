@@ -1,5 +1,7 @@
 package praktikum3;
 
+import praktikum3.util.FileUtil;
+
 import java.sql.SQLException;
 
 public class Main {

@@ -1,4 +1,4 @@
-package praktikum3;
+package praktikum3.util;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -18,9 +18,6 @@ public class DateUtil {
 
         return Date.valueOf(date);
 
-    }
-
-    private DateUtil() {
     }
 
 }

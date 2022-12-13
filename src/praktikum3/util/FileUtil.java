@@ -1,4 +1,4 @@
-package praktikum3;
+package praktikum3.util;
 
 import java.io.File;
 import java.io.FileNotFoundException;

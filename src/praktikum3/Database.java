@@ -1,5 +1,8 @@
 package praktikum3;
 
+import praktikum3.exception.ColumnTypeNotFoundException;
+import praktikum3.util.DateUtil;
+
 import java.sql.*;
 import java.util.Properties;
 
@@ -30,7 +33,7 @@ public class Database implements AutoCloseable {
         System.out.println();
     }
 
-    int[] getColumnTypes() throws SQLException {
+    public int[] getColumnTypes() throws SQLException {
 
         columnTypes = new int[getColumnCount()];
 
@@ -45,12 +48,12 @@ public class Database implements AutoCloseable {
         return rs.getMetaData().getColumnName(i + 1);
     }
 
-    private int getColumnCount() throws SQLException {
+    public int getColumnCount() throws SQLException {
         return rs.getMetaData().getColumnCount();
 
     }
 
-    String[] getColumnNames() throws SQLException {
+    public String[] getColumnNames() throws SQLException {
         columnNames = new String[getColumnCount()];
 
         for (int i = 0; i < columnNames.length; i++) {
@@ -125,7 +128,7 @@ public class Database implements AutoCloseable {
         print();
     }
 
-    private void setSeparator(String separator) {
+    public void setSeparator(String separator) {
         this.separator = separator;
     }
 
@@ -256,5 +259,11 @@ public class Database implements AutoCloseable {
         rs = stmt.executeQuery(query);
         return this;
 
+    }
+
+    public PreparedStatement preparedStatement(String query) throws SQLException {
+
+
+        return cn.prepareStatement(query);
     }
 }
