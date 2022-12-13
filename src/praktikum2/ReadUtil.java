@@ -4,37 +4,51 @@ import java.util.Scanner;
 
 public class ReadUtil {
 
-	public static Scanner scanner = new Scanner(System.in);
+    public static Scanner scanner = new Scanner(System.in);
 
-	public static String readString(String message) {
-		System.out.print(message);
+    public static String readString(String message) {
+        System.out.print(message);
 
-		String input = null;
+        String input = null;
 
-		input = scanner.nextLine();
+        input = scanner.nextLine();
 
-		return input;
+        return input;
 
-	}
+    }
 
-	public static int readInt(String message, int min, int max) throws InputNotInRange {
+    public static int readInt(int min, int max) throws InputNotInRange {
 
-		System.out.print(message);
+        int input = -1;
 
-		int input = -1;
+        input = Integer.parseInt(scanner.nextLine());
 
-		input = Integer.parseInt(scanner.nextLine());
+        if (input < min || input > max) {
+            throw new InputNotInRange(min, max);
 
-		if (input < min || input > max) {
-			throw new InputNotInRange(min, max);
+        }
+        return input;
 
-		}
+    }
 
-		return input;
+    public static int readInt(String message, int min, int max) throws InputNotInRange {
 
-	}
+        System.out.print(message);
 
-	private ReadUtil() {
-	}
+        int input = -1;
+
+        input = Integer.parseInt(scanner.nextLine());
+
+        if (input < min || input > max) {
+            throw new InputNotInRange(min, max);
+
+        }
+
+        return input;
+
+    }
+
+    private ReadUtil() {
+    }
 
 }
