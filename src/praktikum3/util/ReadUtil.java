@@ -1,8 +1,5 @@
 package praktikum3.util;
-
-
 import praktikum3.exception.InputNotInRange;
-
 import java.util.Scanner;
 
 public class ReadUtil {
@@ -18,6 +15,18 @@ public class ReadUtil {
 
 		return input;
 
+	}
+
+	public static int readInt(int min, int max) throws InputNotInRange {
+
+		int input = -1;
+
+		input = Integer.parseInt(scanner.nextLine());
+
+		if (input < min || input > max) {
+			throw new InputNotInRange(min, max);
+		}
+		return input;
 	}
 
 	public static int readInt(String message, int min, int max) throws InputNotInRange {
