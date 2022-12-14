@@ -15,6 +15,23 @@ import java.util.List;
 
 public class PersonDB {
 
+    private Database db = null;
+
+    public PersonDB(Database db) {
+        this.db = db;
+    }
+
+    private static void addMovieList(List<PersonDTO> personList, MovieDB movieDB) {
+
+        List<MovieDTO> movieList;
+
+        for (PersonDTO person : personList) {
+            movieList = movieDB.findMoviesByPersonSimple(person.getPID());
+            person.setMovieList(movieList);
+        }
+
+    }
+
     public Database getDB() {
         return db;
     }
@@ -23,16 +40,12 @@ public class PersonDB {
         this.db = db;
     }
 
-    private Database db = null;
-
-    public PersonDB(Database db) {
-        this.db = db;
-    }
-
-
     public int insert(PersonDTO person) {
         String query = "INSERT INTO PERSON (PID, NAME, GEB_DATUM, GESCHLECHT) VALUES (?, ?, ?, ?)";
         try (PreparedStatement ps = db.preparedStatement(query)) {
+
+            person.setPID(getNextID());
+
             ps.setInt(1, person.getPID());
             ps.setString(2, person.getName());
             ps.setDate(3, person.getGebDatum());
@@ -43,6 +56,20 @@ public class PersonDB {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    private int getNextID() {
+
+        int testID = 1;
+        boolean nextIDFound = false;
+        while (!nextIDFound) {
+            if (findByID(testID) == null) {
+                nextIDFound = true;
+            } else {
+                testID++;
+            }
+        }
+        return testID;
     }
 
     public int update(PersonDTO person) {
@@ -82,26 +109,53 @@ public class PersonDB {
         return 0;
     }
 
-
     public int clear() {
-        String query = "DELETE FROM PERSON";
+
+        PersonDB personDB = new PersonDB(db);
+        int changes = 0;
+
+        for (int i = 0; i <= personDB.getLastID(); i++) {
+            PersonDTO person = personDB.findByID(i);
+            if (person != null) {
+                changes += personDB.delete(person);
+            }
+        }
+        return changes;
+    }
+
+    private int getLastID() {
+
+        final String query = "SELECT MAX(PID) FROM PERSON";
         try (PreparedStatement ps = db.preparedStatement(query)) {
-            return ps.executeUpdate();
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return 0;
     }
 
-    public PersonDTO findPersonByID(int PID) {
+    public PersonDTO findByID(int PID) {
         PersonDTO person = null;
         MovieDB movieDB = new MovieDB(db);
 
         String query = "SELECT * FROM PERSON WHERE PID = ?";
         try (PreparedStatement ps = db.preparedStatement(query)) {
             ps.setInt(1, PID);
-            person = new PersonDTO(ps.executeQuery());
-            person.setMovieList(movieDB.findMoviesByPerson(PID));
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    person = new PersonDTO(rs);
+                }
+            }
+
+            if (person == null) {
+                return null;
+            }
+
+            person.setMovieList(movieDB.findMoviesByPersonSimple(PID));
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -109,9 +163,8 @@ public class PersonDB {
         return person;
     }
 
-    public List<PersonDTO> findPersonsByMovie(int MID) {
+    public List<PersonDTO> findPersonsByMovieSimple(int MID) {
         List<PersonDTO> personList = new ArrayList<>();
-        MovieDB movieDB = new MovieDB(db);
 
         String query = "SELECT * FROM PERSON WHERE PID IN (SELECT PID FROM CAST WHERE MID = ?)";
         try (PreparedStatement ps = db.preparedStatement(query)) {
@@ -122,18 +175,20 @@ public class PersonDB {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-
-        addMovieList(personList, movieDB);
 
         return personList;
     }
 
-    private static void addMovieList(List<PersonDTO> personList, MovieDB movieDB) {
-        for (int i = 0; i < personList.size(); i++) {
-            personList.get(i).setMovieList(movieDB.findMoviesByPerson(personList.get(i).getPID()));
-        }
+    public List<PersonDTO> findPersonsByMovie(int MID) {
+        List<PersonDTO> personList;
+
+        personList = findPersonsByMovieSimple(MID);
+
+        addMovieList(personList, new MovieDB(db));
+
+        return personList;
     }
 
     public int updateInsertPersonList(List<PersonDTO> personList) {
@@ -154,7 +209,7 @@ public class PersonDB {
 
     private boolean isInDatabase(PersonDTO person) {
 
-        return findPersonByID(person.getPID()).getPID() == person.getPID();
+        return findByID(person.getPID()).getPID() == person.getPID();
 
     }
 

@@ -11,6 +11,12 @@ import java.util.List;
 
 public class CastDB {
 
+    private Database db = null;
+
+    public CastDB(Database db) {
+        this.db = db;
+    }
+
     public Database getDB() {
         return db;
     }
@@ -18,13 +24,6 @@ public class CastDB {
     public void setDB(Database db) {
         this.db = db;
     }
-
-    private Database db = null;
-
-    public CastDB(Database db) {
-        this.db = db;
-    }
-
 
     public int insert(CastDTO cast) {
         String query = "INSERT INTO CAST (PID, MID, ROLE) VALUES (?, ?, ?)";
@@ -60,6 +59,27 @@ public class CastDB {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    public CastDTO findByID(int MID, int PID) {
+
+        String query = "SELECT * FROM CAST WHERE MID = ? AND PID = ?";
+        CastDTO cast = new CastDTO();
+
+        try (PreparedStatement ps = db.preparedStatement(query)) {
+            ps.setInt(1, MID);
+            ps.setInt(2, PID);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                cast.setMID(rs.getInt("MID"));
+                cast.setPID(rs.getInt("PID"));
+                cast.setRole(rs.getString("ROLE"));
+                return cast;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public List<CastDTO> findAllByMID(int MID) {

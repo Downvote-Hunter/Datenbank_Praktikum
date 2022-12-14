@@ -18,6 +18,15 @@ public class CastDTO {
     public CastDTO() {
     }
 
+    @Override
+    public String toString() {
+        return "CastDTO{" +
+                "MID=" + MID +
+                ", PID=" + PID +
+                ", role='" + role + '\'' +
+                "}\n";
+    }
+
     public int getMID() {
         return MID;
     }

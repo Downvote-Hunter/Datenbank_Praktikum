@@ -13,6 +13,22 @@ import java.util.List;
 
 public class MovieDB {
 
+    private Database db = null;
+
+    public MovieDB(Database db) {
+        this.db = db;
+    }
+
+    private static void addPersonList(List<MovieDTO> movieList, PersonDB personDB) {
+
+        List<PersonDTO> personList;
+
+        for (MovieDTO movie : movieList) {
+            personList = personDB.findPersonsByMovieSimple(movie.getMID());
+            movie.setPersonList(personList);
+        }
+    }
+
     public Database getDB() {
         return db;
     }
@@ -21,22 +37,26 @@ public class MovieDB {
         this.db = db;
     }
 
-    private Database db = null;
+    public List<MovieDTO> findMoviesByPerson(int PID) {
 
-    public MovieDB(Database db) {
-        this.db = db;
+        List<MovieDTO> movieList = new ArrayList<>();
+
+        movieList = findMoviesByPersonSimple(PID);
+
+        addPersonList(movieList, new PersonDB(db));
+
+        return movieList;
     }
 
-
-    public List<MovieDTO> findMoviesByPerson(int PID) {
+    public List<MovieDTO> findMoviesByPersonSimple(int PID) {
 
         List<MovieDTO> movieList = new ArrayList<>();
 
         String query = "SELECT * FROM MOVIE WHERE MID IN (SELECT MID FROM CAST WHERE PID = ?)";
 
         try (PreparedStatement ps = db.preparedStatement(query)) {
+            ps.setInt(1, PID);
             try (ResultSet rs = ps.executeQuery()) {
-                ps.setInt(1, PID);
                 while (rs.next()) {
                     movieList.add(new MovieDTO(rs));
                 }
@@ -45,27 +65,19 @@ public class MovieDB {
             throw new RuntimeException(e);
         }
 
-        addPersonList(movieList, new PersonDB(db));
-
         return movieList;
-    }
-
-    private static void addPersonList(List<MovieDTO> movieList, PersonDB personDB) {
-        for (int i = 0; i < movieList.size(); i++) {
-            movieList.get(i).setPersonList(personDB.findPersonsByMovie(movieList.get(i).getMID()));
-        }
     }
 
     public List<MovieDTO> findMoviesBetweenYears(int year1, int year2) {
         List<MovieDTO> movieList = new ArrayList<>();
         String queryMovie = "SELECT * FROM MOVIE WHERE YEAR BETWEEN ? AND ?";
 
-        try (PreparedStatement psMovie = db.preparedStatement(queryMovie)) {
-            psMovie.setInt(1, year1);
-            psMovie.setInt(2, year2);
+        try (PreparedStatement ps = db.preparedStatement(queryMovie)) {
+            ps.setInt(1, year1);
+            ps.setInt(2, year2);
 
 
-            try (ResultSet rsMovie = psMovie.executeQuery()) {
+            try (ResultSet rsMovie = ps.executeQuery()) {
                 while (rsMovie.next()) {
                     movieList.add(new MovieDTO(rsMovie));
                 }
@@ -82,16 +94,29 @@ public class MovieDB {
 
     public MovieDTO findByID(int MID) {
         MovieDTO movie = null;
+        List<PersonDTO> personList = null;
         PersonDB personDB = new PersonDB(db);
+
 
         String query = "SELECT * FROM movie WHERE MID = ?";
         try (PreparedStatement ps = db.preparedStatement(query)) {
             ps.setInt(1, MID);
-            movie = new MovieDTO(ps.executeQuery());
-            movie.setPersonList(personDB.findPersonsByMovie(movie.getMID()));
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    movie = new MovieDTO(rs);
+                }
+            }
+
+            if (movie == null) {
+                return null;
+            }
+
+            personList = personDB.findPersonsByMovieSimple(movie.getMID());
+            movie.setPersonList(personList);
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return movie;
@@ -102,14 +127,45 @@ public class MovieDB {
 
         final String query = "INSERT INTO MOVIE (MID, TITLE, YEAR) VALUES (?, ?, ?)";
         try (PreparedStatement ps = db.preparedStatement(query)) {
+
+            movie.setMID(getNextID());
+
             ps.setInt(1, movie.getMID());
             ps.setString(2, movie.getTitle());
             ps.setInt(3, movie.getYear());
+
             return ps.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+    private int getLastID() {
+        final String query = "SELECT MAX(MID) FROM MOVIE";
+        try (PreparedStatement ps = db.preparedStatement(query)) {
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
         return 0;
+    }
+
+    private int getNextID() {
+
+        int testID = 1;
+        boolean nextIDFound = false;
+        while (!nextIDFound) {
+            if (findByID(testID) == null) {
+                nextIDFound = true;
+            } else {
+                testID++;
+            }
+        }
+        return testID;
     }
 
 
@@ -152,13 +208,18 @@ public class MovieDB {
 
 
     public int clear() {
-        final String query = "DELETE FROM MOVIE";
-        try (PreparedStatement ps = db.preparedStatement(query)) {
-            return ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+
+        MovieDB movieDB = new MovieDB(db);
+        int changes = 0;
+
+
+        for (int i = 0; i <= movieDB.getLastID(); i++) {
+            MovieDTO movie = movieDB.findByID(i);
+            if (movie != null) {
+                changes += movieDB.delete(movie);
+            }
         }
-        return 0;
+        return changes;
     }
 
 

@@ -7,17 +7,39 @@ public class DateUtil {
 
     public static Date parse(String dateAsString) {
 
-        String[] splittedDate = dateAsString.split("-");
+        String[] splittedDate;
+        LocalDate date = null;
 
-        int year = Integer.parseInt(splittedDate[0]);
-        int month = Integer.parseInt(splittedDate[1]);
-        int day = Integer.parseInt(splittedDate[2]);
+        int year = 0;
+        int day = 0;
+        int month = 0;
 
-        LocalDate date = LocalDate.of(year, month, day);
-        Date.valueOf(date);
+        splittedDate = dateAsString.split("-");
 
-        return Date.valueOf(date);
+        try {
+            year = Integer.parseInt(splittedDate[0]);
+            month = Integer.parseInt(splittedDate[1]);
+            day = Integer.parseInt(splittedDate[2]);
+
+            date = LocalDate.of(year, month, day);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        if (isValidDate(year, month, day)) {
+            return Date.valueOf(date);
+        } else {
+            throw new RuntimeException("Invalid date");
+        }
 
     }
 
+    private static boolean isValidDate(int year, int month, int day) {
+        if (year >= 1000 && year <= 9999) {
+            if (month >= 1 && month <= 12) {
+                return day >= 1 && day <= 31;
+            }
+        }
+        return false;
+    }
 }

@@ -1,9 +1,9 @@
 package praktikum3.dto;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.sql.Date;
 import java.util.List;
 
 public class PersonDTO {
@@ -21,8 +21,11 @@ public class PersonDTO {
         setName(rs.getString("NAME"));
         setGebDatum(rs.getDate("GEB_DATUM"));
         setGeschlecht(rs.getString("GESCHLECHT"));
-
     }
+
+    public PersonDTO() {
+    }
+
 
     public List<MovieDTO> getMovieList() {
         return movieList;
@@ -96,4 +99,14 @@ public class PersonDTO {
     }
 
 
+    @Override
+    public String toString() {
+        return "PersonDTO{" +
+                "PID=" + PID +
+                ", name='" + name + '\'' +
+                ", gebDatum=" + gebDatum +
+                ", geschlecht='" + geschlecht + '\'' +
+                ", \n\tmovieList=" + movieList +
+                "}\n";
+    }
 }

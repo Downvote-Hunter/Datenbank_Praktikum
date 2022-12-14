@@ -190,7 +190,7 @@ public class Database implements AutoCloseable {
             props.load(propFile);
             cn = DriverManager.getConnection(props.getProperty("url"), props.getProperty("user"), props.getProperty("password"));
 
-            System.out.println("Verbindung hergestellt");
+            System.out.println("Verbindung hergestellt\n");
         } catch (Exception e) {
             System.err.println("connect ERROR :\n" + e);
         }
@@ -200,9 +200,14 @@ public class Database implements AutoCloseable {
     @Override
     public void close() throws Exception {
         cn.close();
-        rs.close();
-        stmt.close();
-        System.out.println("Verbindung geschlossen");
+
+        if (rs != null) {
+            rs.close();
+        }
+        if (stmt != null) {
+            stmt.close();
+        }
+        System.out.println("Verbindung geschlossen\n");
     }
 
     private void printColumnNames() throws SQLException {
@@ -262,7 +267,6 @@ public class Database implements AutoCloseable {
     }
 
     public PreparedStatement preparedStatement(String query) throws SQLException {
-
 
         return cn.prepareStatement(query);
     }
