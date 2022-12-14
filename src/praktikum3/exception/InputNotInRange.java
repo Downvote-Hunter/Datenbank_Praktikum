@@ -6,7 +6,6 @@ public class InputNotInRange extends Exception {
 
         super("Input is not between " + min + " and " + max);
 
-
     }
 
 }

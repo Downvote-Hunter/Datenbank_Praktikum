@@ -18,6 +18,7 @@ public class ReadUtil {
             input = scanner.nextLine();
             if (input.isEmpty()) {
                 System.out.println("Input cannot be empty!");
+                System.out.print(message);
             }
         } while (input.isEmpty());
 
