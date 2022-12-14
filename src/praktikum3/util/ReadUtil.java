@@ -14,7 +14,13 @@ public class ReadUtil {
 
         String input = null;
 
-        input = scanner.nextLine();
+        do {
+            input = scanner.nextLine();
+            if (input.isEmpty()) {
+                System.out.println("Input cannot be empty!");
+            }
+        } while (input.isEmpty());
+
 
         return input;
 
@@ -23,23 +29,17 @@ public class ReadUtil {
     public static int readInt(int min, int max) throws InputNotInRange {
 
         int input = -1;
-
-        input = Integer.parseInt(scanner.nextLine());
-
-        if (input < min || input > max) {
-            throw new InputNotInRange(min, max);
-        }
+        input = readInt("", min, max);
         return input;
     }
 
     public static int readInt(String message, int min, int max) throws InputNotInRange {
 
-        System.out.print(message);
+        if (!message.equals("")) System.out.print(message);
 
         int input = -1;
 
         boolean validInput = false;
-
 
         do {
             try {
@@ -47,14 +47,14 @@ public class ReadUtil {
 
                 if (input < min || input > max) {
                     System.out.println("Input is not between " + min + " and " + max);
-                    System.out.print(message);
+                    if (!message.equals("")) System.out.print(message);
                 } else {
                     validInput = true;
                 }
 
             } catch (NumberFormatException e) {
                 System.out.println("Input is not a number");
-                System.out.print(message);
+                if (!message.equals("")) System.out.print(message);
             }
 
         } while (!validInput);
